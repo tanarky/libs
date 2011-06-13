@@ -9,7 +9,7 @@ class readonly
         if(self::$_locked) return;
         self::$_body = $val;
     }
-    public function set_one($key, $val){
+    public function set($key, $val){
         if(self::$_locked) return;
         self::$_body[$key] = $val;
     }

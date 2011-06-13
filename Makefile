@@ -1,8 +1,13 @@
 .PHONY: init install
 
 IAM=`whoami`
-ROOT=/usr/share/tanarky
+LIBROOT=/usr/share/tanarky
+HTDOCS=/var/www/tanarky
 DIRS=bin lib
+
+install:
+	sudo rsync -av -e ssh --delete lib/    $(LIBROOT)/
+	sudo rsync -av -e ssh --delete htdocs/ $(HTDOCS)/
 
 init:
 	sudo mkdir -p $(ROOT)
