@@ -25,6 +25,10 @@ sub connect {
     $self->handle($h);
     return 1;
 }
+sub DESTROY {
+    my ($self) = @_;
+    $self->cleanup;
+}
 sub begin {
     my ($self) = @_;
     return 0 if(!$self->handle());
