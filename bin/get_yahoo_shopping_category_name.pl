@@ -28,6 +28,7 @@ my $file;
 die unless($co->{$cf}->{$::opts{section}}->{dsn} =~ /dbname=(.*)$/);
 $file = $1;
 unlink $file if(-f $file);
+die if(-f $file);
 
 my $db  = new Tanarky::Rdb();
 die unless($db);
@@ -46,10 +47,18 @@ my $res = $ua->get($org_url, ':content_file' => $tmp_file);
 die 'failed:'. $res->status_line if(!$res->is_success);
 
 tie my @file, 'Tie::File', $tmp_file or die 'cant open file '. $tmp_file;
+$sql = 'insert or replace into categories (id,name,updated_at) values (?, ?, '.time().');';
+$db->begin();
+$db->prepare($sql);
 foreach my $l (@file) {
     next unless($l =~ m|CDATA\[http://category.shopping.yahoo.co.jp/list/(.*?)/(.*)/\]|g);
-    $sql = 'insert or replace into categories (id,name,updated_at) values (?, ?, '.time().');';
-    warn 'insert failed.' if(!$db->exec($sql, $2, uri_unescape($1)));
+    my $name = uri_unescape($1);
+    if($db->execute($2, $name)){
+        warn 'insert success:'. $name;
+    }
+    else {
+        warn 'insert failed:'. $name;
+    }
 }
-
+warn( $db->commit() ? 'commit success' : 'commit failed' );
 

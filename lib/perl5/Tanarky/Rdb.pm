@@ -63,6 +63,18 @@ sub exec {
     $self->sth($s);
     return $self->sth()->execute(@placeholder);
 }
+sub execute {
+    my ($self, @placeholder) = @_;
+    return 0 if(!$self->sth());
+    return $self->sth()->execute(@placeholder);
+}
+sub prepare {
+    my ($self, $sql) = @_;
+    my $s = $self->handle()->prepare($sql);
+    return 0 if(!$s);
+    $self->sth($s);
+    return 1;
+}
 sub pop {
     my ($self) = @_;
     return undef if(!$self->sth());
